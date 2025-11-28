@@ -108,19 +108,40 @@ export default function ChatInterface() {
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
         if (inputText.trim() && userInfo) {
+            const tempId = Date.now().toString();
+            const newMessage: Message = {
+                id: tempId,
+                text: inputText,
+                sender: userInfo.name,
+                timestamp: new Date(),
+                isMe: true,
+            };
+
+            // Optimistic update
+            setMessages((prev) => [...prev, newMessage]);
+            setInputText('');
+
             // Insert into Supabase
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from('messages')
                 .insert({
-                    text: inputText,
-                    sender: userInfo.name,
+                    text: newMessage.text,
+                    sender: newMessage.sender,
                     // created_at is auto-generated
-                });
+                })
+                .select()
+                .single();
 
             if (error) {
                 console.error('Error sending message:', error);
-            } else {
-                setInputText('');
+                // Rollback if error (optional, but good practice)
+                setMessages((prev) => prev.filter(m => m.id !== tempId));
+                alert('Failed to send message. Please try again.');
+            } else if (data) {
+                // Update the temp ID with the real ID from Supabase
+                setMessages((prev) => prev.map(m =>
+                    m.id === tempId ? { ...m, id: data.id.toString() } : m
+                ));
             }
         }
     };
