@@ -51,7 +51,7 @@ export default function Calendar({ events }: CalendarProps) {
       '#84cc16', // lime
     ];
 
-    const hash = institution.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hash = institution.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
     const color = colors[hash % colors.length];
 
     return {
