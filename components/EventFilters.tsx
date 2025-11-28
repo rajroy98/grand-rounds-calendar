@@ -31,7 +31,7 @@ export default function EventFilters({
   const selectAll = () => {
     onSelectionChange([...institutions]);
   };
-
+  // Render filters
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -84,6 +84,6 @@ export default function EventFilters({
       </div>
     </div>
   );
-  );
+
 }
 
