@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import Calendar from '@/components/Calendar';
 import EventFilters from '@/components/EventFilters';
-import ChatWidget from '@/components/ChatWidget';
 import { CalendarEvent } from '@/lib/calendar-service';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, MessageCircle } from 'lucide-react';
 
 export default function Home() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -80,32 +80,32 @@ export default function Home() {
           <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 mb-4">
             Surgery Grand Rounds Collaborative
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
             A collaborative hub for surgery grand rounds across premier institutions.
             Stay updated with real-time event schedules.
           </p>
 
-          {/* Status Bar */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm">
+          <div className="flex items-center justify-center gap-4">
             <button
               onClick={fetchEvents}
-              disabled={loading}
-              className="group flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-full border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-sm hover:shadow-md group"
             >
-              <RefreshCw className={`w-4 h-4 text-blue-500 ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
-              <span className="font-medium">{loading ? 'Syncing...' : 'Refresh Calendar'}</span>
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+              <span>Refresh Calendar</span>
             </button>
 
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50/50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-800/50">
-              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-              Last updated: {lastUpdate.toLocaleTimeString()}
-            </div>
+            <Link
+              href="/chat"
+              className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 group"
+            >
+              <MessageCircle className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              <span>Connect with Surgeons</span>
+            </Link>
+          </div>
 
-            {error && (
-              <div className="px-4 py-2 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800/50">
-                {error}
-              </div>
-            )}
+          <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-500">
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            Last updated: {lastUpdate.toLocaleTimeString()}
           </div>
         </div>
 
@@ -158,8 +158,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <ChatWidget />
     </main>
   );
 }
-
