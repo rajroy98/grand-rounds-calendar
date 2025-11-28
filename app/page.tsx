@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Calendar from '@/components/Calendar';
 import EventFilters from '@/components/EventFilters';
+import ChatWidget from '@/components/ChatWidget';
 import { CalendarEvent } from '@/lib/calendar-service';
 import { RefreshCw } from 'lucide-react';
 
@@ -77,7 +78,7 @@ export default function Home() {
         <div className="glass-card p-8 text-center relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
           <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 mb-4">
-            Grand Rounds Calendar
+            Surgery Grand Rounds Collaborative
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             A collaborative hub for surgery grand rounds across premier institutions.
