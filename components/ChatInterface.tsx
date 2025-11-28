@@ -16,6 +16,8 @@ interface UserInfo {
     email: string;
 }
 
+import { supabase } from '@/lib/supabase';
+
 export default function ChatInterface() {
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
@@ -33,35 +35,93 @@ export default function ChatInterface() {
         scrollToBottom();
     }, [messages]);
 
+    // Load user info from local storage on mount
+    useEffect(() => {
+        const savedUser = localStorage.getItem('chat_user_info');
+        if (savedUser) {
+            setUserInfo(JSON.parse(savedUser));
+        }
+    }, []);
+
+    // Real-time subscription and fetching
+    useEffect(() => {
+        if (!userInfo) return;
+
+        // Fetch last 7 days of messages
+        const fetchMessages = async () => {
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+            const { data, error } = await supabase
+                .from('messages')
+                .select('*')
+                .gt('created_at', oneWeekAgo.toISOString())
+                .order('created_at', { ascending: true });
+
+            if (data) {
+                setMessages(data.map((msg: any) => ({
+                    id: msg.id,
+                    text: msg.text,
+                    sender: msg.sender,
+                    timestamp: new Date(msg.created_at),
+                    isMe: msg.sender === userInfo.name
+                })));
+            }
+        };
+
+        fetchMessages();
+
+        // Subscribe to new messages
+        const channel = supabase
+            .channel('public:messages')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+                const newMsg = payload.new;
+                setMessages((prev) => {
+                    // Avoid duplicates if we sent it (optimistic UI could cause this, but we aren't doing optimistic here yet)
+                    if (prev.some(m => m.id === newMsg.id)) return prev;
+
+                    return [...prev, {
+                        id: newMsg.id,
+                        text: newMsg.text,
+                        sender: newMsg.sender,
+                        timestamp: new Date(newMsg.created_at),
+                        isMe: newMsg.sender === userInfo.name
+                    }];
+                });
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [userInfo]);
+
     const handleRegister = (e: React.FormEvent) => {
         e.preventDefault();
         if (nameInput.trim() && emailInput.trim()) {
-            setUserInfo({ name: nameInput, email: emailInput });
-            // Add a welcome message
-            setMessages([
-                {
-                    id: 'welcome',
-                    text: `Welcome to the Surgery Grand Rounds Collaborative chat, ${nameInput}!`,
-                    sender: 'System',
-                    timestamp: new Date(),
-                    isMe: false,
-                },
-            ]);
+            const user = { name: nameInput, email: emailInput };
+            setUserInfo(user);
+            localStorage.setItem('chat_user_info', JSON.stringify(user));
         }
     };
 
-    const handleSendMessage = (e: React.FormEvent) => {
+    const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
         if (inputText.trim() && userInfo) {
-            const newMessage: Message = {
-                id: Date.now().toString(),
-                text: inputText,
-                sender: userInfo.name,
-                timestamp: new Date(),
-                isMe: true,
-            };
-            setMessages((prev) => [...prev, newMessage]);
-            setInputText('');
+            // Insert into Supabase
+            const { error } = await supabase
+                .from('messages')
+                .insert({
+                    text: inputText,
+                    sender: userInfo.name,
+                    // created_at is auto-generated
+                });
+
+            if (error) {
+                console.error('Error sending message:', error);
+            } else {
+                setInputText('');
+            }
         }
     };
 
@@ -142,8 +202,8 @@ export default function ChatInterface() {
                     >
                         <div
                             className={`max-w-[70%] px-5 py-3 rounded-2xl text-sm shadow-sm ${msg.isMe
-                                    ? 'bg-blue-600 text-white rounded-tr-none'
-                                    : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'
+                                ? 'bg-blue-600 text-white rounded-tr-none'
+                                : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'
                                 }`}
                         >
                             {msg.text}
