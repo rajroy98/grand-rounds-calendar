@@ -70,7 +70,7 @@ export default function ChatWidget() {
         return (
             <button
                 onClick={() => setIsOpen(true)}
-                className="fixed bottom-6 left-6 z-50 p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group"
+                className="fixed bottom-6 left-6 z-[9999] p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group border-2 border-white dark:border-gray-800"
             >
                 <MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform" />
                 <span className="absolute left-full ml-3 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
@@ -81,7 +81,7 @@ export default function ChatWidget() {
     }
 
     return (
-        <div className="fixed bottom-6 left-6 z-50 w-80 md:w-96 flex flex-col glass-card shadow-2xl border border-white/20 dark:border-gray-700/50 overflow-hidden animate-in slide-in-from-bottom-5 fade-in duration-300">
+        <div className="fixed bottom-6 left-6 z-[9999] w-80 md:w-96 flex flex-col glass-card shadow-2xl border border-white/20 dark:border-gray-700/50 overflow-hidden animate-in slide-in-from-bottom-5 fade-in duration-300">
             {/* Header */}
             <div className="p-4 bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-between text-white">
                 <div className="flex items-center gap-2">
@@ -153,8 +153,8 @@ export default function ChatWidget() {
                                 >
                                     <div
                                         className={`max-w-[85%] px-3 py-2 rounded-2xl text-sm ${msg.isMe
-                                                ? 'bg-blue-600 text-white rounded-tr-none'
-                                                : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'
+                                            ? 'bg-blue-600 text-white rounded-tr-none'
+                                            : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none'
                                             }`}
                                     >
                                         {msg.text}
