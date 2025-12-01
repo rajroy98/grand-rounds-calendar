@@ -43,7 +43,7 @@ export class CalendarService {
     const title = event.summary || '';
     const description = event.description || '';
     const location = event.location || '';
-    
+
     // Common patterns to identify institutions
     // You can customize this based on how institutions name their events
     const institutionPatterns = [
@@ -118,7 +118,7 @@ export class CalendarService {
   ): Promise<CalendarEvent[]> {
     try {
       // Use the calendar email from environment or default
-      const calendarId = process.env.GOOGLE_CALENDAR_EMAIL || 'rajroy121998@gmail.com';
+      const calendarId = process.env.GOOGLE_CALENDAR_EMAIL || 'grandroundscollaborative@gmail.com';
 
       const response = await this.calendar.events.list({
         calendarId: calendarId,
@@ -137,7 +137,7 @@ export class CalendarService {
           const start = new Date(event.start.dateTime);
           const end = new Date(event.end.dateTime);
           const description = event.description || '';
-          
+
           return {
             id: event.id,
             title: event.summary || 'Untitled Event',
