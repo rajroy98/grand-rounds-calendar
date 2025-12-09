@@ -1,6 +1,6 @@
 # Grand Rounds Calendar
 
-A collaborative calendar application for tracking surgery grand rounds events across multiple institutions in America. Institutions can add the shared Gmail account (`rajroy121998@gmail.com`) to their Zoom calendar invites, and all events will automatically appear in this real-time calendar interface.
+A collaborative calendar application for tracking surgery grand rounds events across multiple institutions in America. Institutions can add the shared Gmail account (`grandroundscollaborative@gmail.com`) to their Zoom calendar invites, and all events will automatically appear in this real-time calendar interface.
 
 ## Features
 
@@ -15,7 +15,7 @@ A collaborative calendar application for tracking surgery grand rounds events ac
 
 - Node.js 18+ and npm
 - A Google Cloud Project with Calendar API enabled
-- A Gmail account (e.g., `rajroy121998@gmail.com`) for receiving calendar invites
+- A Gmail account (e.g., `grandroundscollaborative@gmail.com`) for receiving calendar invites
 
 ## Setup Instructions
 
@@ -47,7 +47,7 @@ npm install
    - Go to "APIs & Services" > "OAuth consent screen"
    - Choose "External" (unless you have a Google Workspace account)
    - Fill in the required fields (App name, User support email, Developer contact email)
-   - Add your test email (`rajroy121998@gmail.com`) to the "Test users" section
+   - Add your test email (`grandroundscollaborative@gmail.com`) to the "Test users" section
    - Click "Save and Continue" through the scopes and summary screens
    - **Important**: You must add your email as a test user, otherwise you'll get "Access blocked" error
 
@@ -78,7 +78,7 @@ npm install
    GOOGLE_CLIENT_SECRET=your-client-secret
    GOOGLE_REDIRECT_URI=http://localhost:3000/api/auth/callback
    GOOGLE_REFRESH_TOKEN=your-refresh-token
-   GOOGLE_CALENDAR_EMAIL=rajroy121998@gmail.com
+   GOOGLE_CALENDAR_EMAIL=grandroundscollaborative@gmail.com
    ```
 
 ### 5. Run the Development Server
@@ -91,7 +91,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## How It Works
 
-1. **Institutions add events**: Institutions add `rajroy121998@gmail.com` as an attendee to their Zoom calendar invites
+1. **Institutions add events**: Institutions add `grandroundscollaborative@gmail.com` as an attendee to their Zoom calendar invites
 2. **Events sync automatically**: The application polls Google Calendar API every 5 minutes
 3. **Institution detection**: The app automatically identifies institutions from event titles, descriptions, or organizer emails
 4. **Real-time display**: All events appear in the calendar interface with filtering capabilities
@@ -160,7 +160,7 @@ grand-rounds-calendar/
   - This happens when your email is not added as a test user in the OAuth consent screen
   - Go to Google Cloud Console > APIs & Services > OAuth consent screen
   - Scroll down to "Test users" section
-  - Click "+ ADD USERS" and add your email (`rajroy121998@gmail.com`)
+  - Click "+ ADD USERS" and add your email (`grandroundscollaborative@gmail.com`)
   - Save and try the OAuth flow again
 - Ensure the refresh token hasn't expired
 - Re-run the OAuth flow to get a new refresh token
