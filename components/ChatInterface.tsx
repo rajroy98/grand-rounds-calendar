@@ -77,9 +77,31 @@ export default function ChatInterface() {
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
                 const newMsg = payload.new;
                 setMessages((prev) => {
-                    // Avoid duplicates if we sent it (optimistic UI could cause this, but we aren't doing optimistic here yet)
+                    // 1. Check if we already have this exact message ID (deduplication)
                     if (prev.some(m => m.id === newMsg.id)) return prev;
 
+                    // 2. If it's from me, check if we have a pending optimistic message
+                    // We look for a message from me, with the same text, and a temporary ID
+                    if (newMsg.sender === userInfo.name) {
+                        const pendingIndex = prev.findIndex(m =>
+                            m.isMe &&
+                            m.text === newMsg.text &&
+                            m.id.startsWith('temp-')
+                        );
+
+                        if (pendingIndex !== -1) {
+                            // Found the pending message! Update it with the real ID and timestamp
+                            const newMessages = [...prev];
+                            newMessages[pendingIndex] = {
+                                ...newMessages[pendingIndex],
+                                id: newMsg.id,
+                                timestamp: new Date(newMsg.created_at)
+                            };
+                            return newMessages;
+                        }
+                    }
+
+                    // 3. Otherwise, it's a new message (from someone else or missed optimistic update)
                     return [...prev, {
                         id: newMsg.id,
                         text: newMsg.text,
@@ -108,7 +130,7 @@ export default function ChatInterface() {
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
         if (inputText.trim() && userInfo) {
-            const tempId = Date.now().toString();
+            const tempId = `temp-${Date.now()}`;
             const newMessage: Message = {
                 id: tempId,
                 text: inputText,
@@ -134,11 +156,12 @@ export default function ChatInterface() {
 
             if (error) {
                 console.error('Error sending message:', error);
-                // Rollback if error (optional, but good practice)
+                // Rollback if error
                 setMessages((prev) => prev.filter(m => m.id !== tempId));
                 alert('Failed to send message. Please try again.');
             } else if (data) {
                 // Update the temp ID with the real ID from Supabase
+                // Note: The subscription might have already done this, which is fine.
                 setMessages((prev) => prev.map(m =>
                     m.id === tempId ? { ...m, id: data.id.toString() } : m
                 ));
